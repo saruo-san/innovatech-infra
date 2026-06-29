@@ -1,0 +1,63 @@
+{
+  "family": "innovatech-backend-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "postgres-db",
+      "image": "postgres:15-alpine",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5432,
+          "hostPort": 5432,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "POSTGRES_USER", "value": "postgres" },
+        { "name": "POSTGRES_PASSWORD", "value": "example" },
+        { "name": "POSTGRES_DB", "value": "appdb" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/innovatech-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "db"
+        }
+      }
+    },
+    {
+      "name": "innovatech-backend",
+      "image": "500966592325.dkr.ecr.us-east-1.amazonaws.com/innovatech-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "DATABASE_HOST", "value": "127.0.0.1" },
+        { "name": "DATABASE_USER", "value": "postgres" },
+        { "name": "DATABASE_PASSWORD", "value": "example" },
+        { "name": "DATABASE_DB", "value": "appdb" },
+        { "name": "PORT", "value": "3000" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/innovatech-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "api"
+        }
+      }
+    }
+  ]
+}
